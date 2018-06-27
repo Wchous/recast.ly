@@ -1,11 +1,19 @@
 class App extends React.Component {
-  constructor(){
-    // super(props)
+  constructor(props){
+    super(props);
 
     this.state = {
       videos : window.exampleVideoData,
       selected : window.exampleVideoData[0]
     };
+
+    this.select = this.select.bind(this);
+  }
+
+
+
+  select(target){
+    this.setState({selected : target});
   }
 
   render(){
@@ -24,7 +32,7 @@ class App extends React.Component {
           </div>
           <div className="col-md-5">
             {/*video list here*/}
-            <VideoList videos = {this.state.videos} />
+            <VideoList videos = {this.state.videos} select ={this.select} />
           </div>
         </div>
       </div>
