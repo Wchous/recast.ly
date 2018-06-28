@@ -11,7 +11,7 @@ class App extends React.Component {
     this.buildFetch = this.buildFetch.bind(this);
 
     const results = searchYoutube('funny dog videos');
-    results.then( (x)=>{ this.setState(x); });
+    results.then( (x)=>{ this.setState({videos: x.items , selected: x.items[0]}); });
     
   }
 
@@ -26,7 +26,8 @@ class App extends React.Component {
     const query = $(".form-control").val();
     $(".form-control").val('');
     const results = searchYoutube(query);
-    results.then( (x)=>{ this.setState(x); });
+
+    results.then( (x)=>{ this.setState({videos: x.items , selected: x.items[0]}); });
   }
 
   
@@ -60,27 +61,20 @@ class App extends React.Component {
 window.App = App;
 
 window.searchYoutube = function(query) {
-  return new Promise(function(resolve, reject) {
-    $.ajax({
-      type: 'GET',
-      url: 'https://www.googleapis.com/youtube/v3/search',
-      success: function(result) {
-        console.log(result);
-        resolve( {videos : result.items, selected : result.items[0]} );
-      },
-      error: function(result) {
-        console.log(result);
-        reject(result);
-      },
-      data: {
-        maxResults: '5',
-        part: 'snippet',
-        q: query,
-        type: 'video',
-        videoEmbeddable: true,
-        key: window.YOUTUBE_API_KEY
-      },
-      contentType: 'application/json'
-    });
-  });
+
+
+  const url = new URL('https://www.googleapis.com/youtube/v3/search');
+  const params = {maxResults: '5',
+    part: 'snippet',
+    q: query,
+    type: 'video',
+    videoEmbeddable: true,
+    key: window.YOUTUBE_API_KEY};
+
+  Object.keys(params).forEach(key => url.searchParams.append(key, params[key] ));
+
+  return fetch(url).then((result)=>result.json());
+
+
+
 };
