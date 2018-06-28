@@ -1,48 +1,46 @@
 class App extends React.Component {
-  constructor(props){
+  constructor(props) {
     super(props);
 
     this.state = {
-      videos : window.exampleVideoData,
-      selected : window.exampleVideoData[0]
+      videos: window.exampleVideoData,
+      selected: window.exampleVideoData[0]
     };
-window.f = this.fetch.bind(this);
+    window.f = this.fetch.bind(this);
     this.select = this.select.bind(this);
   }
 
 
 
-  select(target){
-    this.setState({selected : target});
+  select(target) {
+    this.setState({selected: target});
   }
 
-  fetch(query){
-    console.log(window.YOUTUBE_API_KEY)
+  fetch(query) {
+    console.log(window.YOUTUBE_API_KEY);
     $.ajax({
-      type:'GET',
-      url: "https://googleapis.com/youtube/v3/search", 
-    success: function(result){
-     console.log(result)
-    },
-    error: function(result){
-      console.log(result)
-    },
-    data: {
-      'maxResults':'5',
-      'part':'snippet',
-      'q':query,
-      'type':'video',
-      'videoEmbeddable':true,
-      'key': window.YOUTUBE_API_KEY
-    },
-    contentType:'application/json'
-   
-  }
-    )
+      type: 'GET',
+      url: 'https://www.googleapis.com/youtube/v3/search',
+      success: function(result) {
+        console.log(result);
+      },
+      error: function(result) {
+        console.log(result);
+      },
+      data: {
+        maxResults: '5',
+        part: 'snippet',
+        q: query,
+        type: 'video',
+        videoEmbeddable: true,
+        key: window.YOUTUBE_API_KEY
+      },
+      contentType: 'application/json'
+    });
   }
 
-  render(){
-    return(
+  render() {
+    return (
       <div>
         <nav className="navbar">
           <div className="col-md-6 offset-md-3">
