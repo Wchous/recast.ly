@@ -7,39 +7,29 @@ class App extends React.Component {
       selected: window.exampleVideoData[0]
     };
     this.select = this.select.bind(this);
-    this.fetch = this.fetch.bind(this);
+    this.buildFetch = _.debounce(this.buildFetch, 500);
+    this.buildFetch = this.buildFetch.bind(this);
+
+    const results = searchYoutube('funny dog videos');
+    results.then( (x)=>{ this.setState(x); });
+    
   }
+
+
 
   select(target) {
     this.setState({selected: target});
   }
 
-  fetch(event) {
-    event.preventDefault();
+  buildFetch(){
+    
     const query = $(".form-control").val();
     $(".form-control").val('');
-    const self = this;
-    $.ajax({
-      type: 'GET',
-      url: 'https://www.googleapis.com/youtube/v3/search',
-      success: function(result) {
-        console.log(result);
-        self.setState({videos : result.items, selected : result.items[0]});
-      },
-      error: function(result) {
-        console.log(result);
-      },
-      data: {
-        maxResults: '5',
-        part: 'snippet',
-        q: query,
-        type: 'video',
-        videoEmbeddable: true,
-        key: window.YOUTUBE_API_KEY
-      },
-      contentType: 'application/json'
-    });
+    const results = searchYoutube(query);
+    results.then( (x)=>{ this.setState(x); });
   }
+
+  
 
   render() {
     return (
@@ -47,7 +37,7 @@ class App extends React.Component {
         <nav className="navbar">
           <div className="col-md-6 offset-md-3">
             {/*search went here*/}
-            <Search fetch = {this.fetch}/> 
+            <Search buildFetch = {this.buildFetch}/> 
           </div>
         </nav>
         <div className="row">
@@ -68,3 +58,29 @@ class App extends React.Component {
 // In the ES6 spec, files are "modules" and do not share a top-level scope
 // `var` declarations will only exist globally where explicitly defined
 window.App = App;
+
+window.searchYoutube = function(query) {
+  return new Promise(function(resolve, reject) {
+    $.ajax({
+      type: 'GET',
+      url: 'https://www.googleapis.com/youtube/v3/search',
+      success: function(result) {
+        console.log(result);
+        resolve( {videos : result.items, selected : result.items[0]} );
+      },
+      error: function(result) {
+        console.log(result);
+        reject(result);
+      },
+      data: {
+        maxResults: '5',
+        part: 'snippet',
+        q: query,
+        type: 'video',
+        videoEmbeddable: true,
+        key: window.YOUTUBE_API_KEY
+      },
+      contentType: 'application/json'
+    });
+  });
+};
