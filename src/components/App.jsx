@@ -6,23 +6,25 @@ class App extends React.Component {
       videos: window.exampleVideoData,
       selected: window.exampleVideoData[0]
     };
-    window.f = this.fetch.bind(this);
     this.select = this.select.bind(this);
+    this.fetch = this.fetch.bind(this);
   }
-
-
 
   select(target) {
     this.setState({selected: target});
   }
 
-  fetch(query) {
-    console.log(window.YOUTUBE_API_KEY);
+  fetch(event) {
+    event.preventDefault();
+    const query = $(".form-control").val();
+    $(".form-control").val('');
+    const self = this;
     $.ajax({
       type: 'GET',
       url: 'https://www.googleapis.com/youtube/v3/search',
       success: function(result) {
         console.log(result);
+        self.setState({videos : result.items, selected : result.items[0]});
       },
       error: function(result) {
         console.log(result);
@@ -45,7 +47,7 @@ class App extends React.Component {
         <nav className="navbar">
           <div className="col-md-6 offset-md-3">
             {/*search went here*/}
-            <Search /> 
+            <Search fetch = {this.fetch}/> 
           </div>
         </nav>
         <div className="row">
